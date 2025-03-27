@@ -19,6 +19,18 @@ When you click the **Knit** button a document will be generated that includes bo
 library(readr)
 steak <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/refs/heads/master/steak-survey/steak-risk-survey.csv", stringsAsFactors = FALSE)
 
+names(steak)[names(steak) == "Consider.the.following.hypothetical.situations...br.In.Lottery.A..you.have.a.50..chance.of.success..with.a.payout.of..100...br.In.Lottery.B..you.have.a.90..chance.of.success..with.a.payout.of..20...br..br.Assuming.you.have..10.to.bet..would.you.play.Lottery.A.or.Lottery.B."] <- "Lottery"
+names(steak)[names(steak) == "Do.you.ever.smoke.cigarettes."] <- "Smoke.Cigarettes"
+names(steak)[names(steak) == "Do.you.ever.drink.alcohol."] <- "Drink.Alcohol"
+names(steak)[names(steak) == "Do.you.ever.gamble."] <- "Gamble"
+names(steak)[names(steak) == "Have.you.ever.been.skydiving."] <- "Skydiving"
+names(steak)[names(steak) == "Do.you.ever.drive.above.the.speed.limit."] <- "Speed"
+names(steak)[names(steak) == "Have.you.ever.cheated.on.your.significant.other."] <- "Affair"
+names(steak)[names(steak) == "How.do.you.like.your.steak.prepared."] <- "Prepared"
+names(steak)[names(steak) == "Do.you.eat.steak."] <- "Consume.Steak"
+names(steak)[names(steak) == "Location..Census.Region."] <- "Location"
+
+
 View(steak)
 
 ```
