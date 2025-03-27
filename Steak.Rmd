@@ -1,6 +1,6 @@
 ---
 title: "Final Project Code"
-author: "Megan Mason"
+author: "Megan Mason, Gwen Hammond, and Ryan Jensen"
 date: "2025-03-27"
 output: html_document
 ---
@@ -9,13 +9,22 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## DS 2020 Final Project: Do American Lifestyles correlate with how you like your steak?
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## The Data Set
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+-   This data set looks at factors and risky behaviors that are found in the American lifestyle. The purpose of this data set is to predict how lifestyle choices correlate with how Americans like there steak. The data set contains 551 observations and has 15 variables which are mainly categorical.
+
+## Cleaning the Data
+
+-   Megan started off cleaning the data by re-names the columns so that they are easier to work with.
+
+-   Gwen created a subset of the data where missing values are excluded.
+
+-   Ryan created subsets of people who do eat steak and who don't eat steak.
 
 ```{r}
+#Megan's Code 
 library(readr)
 steak <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/refs/heads/master/steak-survey/steak-risk-survey.csv", stringsAsFactors = FALSE)
 
@@ -30,18 +39,17 @@ names(steak)[names(steak) == "How.do.you.like.your.steak.prepared."] <- "Prepare
 names(steak)[names(steak) == "Do.you.eat.steak."] <- "Consume.Steak"
 names(steak)[names(steak) == "Location..Census.Region."] <- "Location"
 
-print("hello world")
 
 View(steak)
 
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
 ```{r}
-print("placeholder")
+#Gwen's Code
+clean_steak <- steak[complete.cases(steak), ]
+
+anyNA(clean_steak)
+
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
