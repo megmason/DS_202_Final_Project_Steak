@@ -30,6 +30,7 @@ names(steak)[names(steak) == "How.do.you.like.your.steak.prepared."] <- "Prepare
 names(steak)[names(steak) == "Do.you.eat.steak."] <- "Consume.Steak"
 names(steak)[names(steak) == "Location..Census.Region."] <- "Location"
 
+print("hello world")
 
 View(steak)
 
