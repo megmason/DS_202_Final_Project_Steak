@@ -382,9 +382,8 @@ excluded.</p></li>
 steak.</p></li>
 </ul>
 <pre class="r"><code>#Megan&#39;s Code 
-library(readr)</code></pre>
-<pre><code>## Warning: package &#39;readr&#39; was built under R version 4.4.2</code></pre>
-<pre class="r"><code>steak &lt;- read.csv(&quot;https://raw.githubusercontent.com/fivethirtyeight/data/refs/heads/master/steak-survey/steak-risk-survey.csv&quot;, stringsAsFactors = FALSE)
+library(readr)
+steak &lt;- read.csv(&quot;https://raw.githubusercontent.com/fivethirtyeight/data/refs/heads/master/steak-survey/steak-risk-survey.csv&quot;, stringsAsFactors = FALSE)
 
 names(steak)[names(steak) == &quot;Consider.the.following.hypothetical.situations...br.In.Lottery.A..you.have.a.50..chance.of.success..with.a.payout.of..100...br.In.Lottery.B..you.have.a.90..chance.of.success..with.a.payout.of..20...br..br.Assuming.you.have..10.to.bet..would.you.play.Lottery.A.or.Lottery.B.&quot;] &lt;- &quot;Lottery&quot;
 names(steak)[names(steak) == &quot;Do.you.ever.smoke.cigarettes.&quot;] &lt;- &quot;Smoke.Cigarettes&quot;
@@ -406,9 +405,6 @@ anyNA(clean_steak)</code></pre>
 <pre><code>## [1] FALSE</code></pre>
 <pre class="r"><code>#Ryan&#39;s Code
 library(tidyverse)</code></pre>
-<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 4.4.2</code></pre>
-<pre><code>## Warning: package &#39;forcats&#39; was built under R version 4.4.2</code></pre>
-<pre><code>## Warning: package &#39;lubridate&#39; was built under R version 4.4.2</code></pre>
 <pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ## ✔ dplyr     1.1.4     ✔ purrr     1.0.2
 ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
