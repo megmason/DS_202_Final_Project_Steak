@@ -53,3 +53,27 @@ anyNA(clean_steak)
 
 ```
 
+```{r}
+#Ryan's Code
+library(tidyverse)
+eat_steak <- clean_steak %>% 
+  filter(Consume.Steak == "Yes")
+
+no_steak <- clean_steak %>% 
+  filter(Consume.Steak == "No")
+
+View(eat_steak)
+View(no_steak)
+  
+```
+
+## Questions:
+Some potential questions that we are interested in examining are:
+
+-   How does household income affect whether individuals eat steak? 
+
+-   How does age affect how individuals like their steak prepared?  
+
+-   How does drinking alcohol and smoking cigarettes influence how those prefer their steak prepared?
+
+
