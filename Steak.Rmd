@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 -   Ryan created subsets of people who do eat steak and who don't eat steak.
 
-```{r}
+```{r include=FALSE}
 #Megan's Code 
 library(readr)
 steak <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/refs/heads/master/steak-survey/steak-risk-survey.csv", stringsAsFactors = FALSE)
@@ -38,9 +38,6 @@ names(steak)[names(steak) == "Have.you.ever.cheated.on.your.significant.other."]
 names(steak)[names(steak) == "How.do.you.like.your.steak.prepared."] <- "Prepared"
 names(steak)[names(steak) == "Do.you.eat.steak."] <- "Consume.Steak"
 names(steak)[names(steak) == "Location..Census.Region."] <- "Location"
-
-
-View(steak)
 
 ```
 
@@ -62,8 +59,8 @@ eat_steak <- clean_steak %>%
 no_steak <- clean_steak %>% 
   filter(Consume.Steak == "No")
 
-View(eat_steak)
-View(no_steak)
+# View(eat_steak)
+# View(no_steak)
   
 ```
 
@@ -76,4 +73,106 @@ Some potential questions that we are interested in examining are:
 
 -   How does drinking alcohol and smoking cigarettes influence how those prefer their steak prepared?
 
+```{r echo=FALSE} 
+#Megan's code: Looking at cheating vs steak prepared
+library(ggplot2)
+affairYes <- eat_steak %>%
+  filter(!is.na(Affair)) %>%
+  filter(!(is.na(Consume.Steak))) %>%
+  count(`Affair`) %>%
+  mutate(percentage = n / sum(n))
+affairYes
 
+affairNo <- no_steak %>%
+  filter(!is.na(Affair)) %>%
+  filter(!(is.na(Consume.Steak))) %>%
+  count(`Affair`) %>%
+  mutate(percentage = n / sum(n))
+affairNo
+
+clean_steak %>%
+  filter(Affair != '') %>%
+  filter(`Consume.Steak` != "") %>%
+  group_by(`Consume.Steak`) %>%
+  count(Affair) %>%
+  mutate(percentage_total = n / sum(n)) %>%
+  ggplot(aes(x=factor(`Consume.Steak`), y=percentage_total, fill=Affair)) +
+  geom_col(position="dodge") +
+  theme_minimal() +
+  labs(x="consume steak", y="percentage", fill="affair")
+
+clean_steak$Education <- factor(clean_steak$Education, 
+                             levels = c('Less than high school degree', 'High school degree', 'Some college or Associate degree', 'Bachelor degree', 'Graduate degree'))
+clean_steak$Location <- factor(clean_steak$Location,
+                             levels = c("New England","Middle Atlantic", "South Atlantic", "East North Central", "East South Central", "West South Central", "West North Central",  "Mountain", "Pacific", ""))
+clean_steak %>%
+  filter(Education != '') %>%
+  filter(`Consume.Steak` != "") %>%
+  group_by(Education) %>%
+  count(`Consume.Steak`) %>%
+  mutate(percentage_total = n / sum(n)) %>%
+  ggplot(aes(x=factor(Education), y=percentage_total, fill=`Consume.Steak`)) +
+  geom_col(position="dodge") +
+  coord_flip() +
+  theme_minimal() +
+  labs(x="Education", y="Percentage", fill="Eat Steak")
+
+clean_steak %>%
+  filter(Location != '') %>%
+  filter(`Consume.Steak` != "") %>%
+  group_by(Location) %>%
+  count(`Consume.Steak`) %>%
+  mutate(percentage_total = n / sum(n)) %>%
+  ggplot(aes(x=factor(Location), y=percentage_total, fill=`Consume.Steak`)) +
+  geom_col(position="dodge") +
+  coord_flip() +
+  theme_minimal() +
+  labs(x="Location", y="Percentage", fill="Eat Steak")
+
+
+
+eat_steak$Prepared <- factor(eat_steak$Prepared, 
+                             levels = c('Rare', 'Medium rare', 'Medium', 'Medium Well', 'Well'))
+eat_steak$Education <- factor(eat_steak$Education, 
+                             levels = c('Less than high school degree', 'High school degree', 'Some college or Associate degree', 'Bachelor degree', 'Graduate degree'))
+
+print(unique(eat_steak$Location))
+eat_steak$Location <- factor(eat_steak$Location,
+                             levels = c("New England","Middle Atlantic", "South Atlantic", "East North Central", "East South Central", "West South Central", "West North Central",  "Mountain", "Pacific", ""))
+eat_steak %>%
+  filter(Affair != '') %>%
+  filter(`Consume.Steak` != "") %>%
+  group_by(Affair) %>%
+  count(Prepared) %>%
+  mutate(percentage_prepared = n / sum(n)) %>% 
+  ggplot(aes(x=factor(Affair), y=percentage_prepared, fill=Prepared)) +
+  geom_col(position="dodge") +
+  theme_minimal() +
+  labs(x="affair", y="percentage", fill="how do you like it prepared")
+
+eat_steak %>%
+  filter(Education != '') %>%
+  filter(`Consume.Steak` != "") %>%
+  group_by(Education) %>%
+  count(Prepared) %>%
+  mutate(percentage_prepared = n / sum(n)) %>% 
+  ggplot(aes(x=factor(Education), y=percentage_prepared, fill=Prepared)) +
+  geom_col(position="dodge") +
+  coord_flip() +
+  theme_minimal() +
+  labs(x="education", y="percentage", fill="how do you like it prepared")
+
+eat_steak %>%
+  filter(Location != '') %>%
+  filter(`Consume.Steak` != "") %>%
+  group_by(Location) %>%
+  count(Prepared) %>%
+  mutate(percentage_prepared = n / sum(n)) %>% 
+  ggplot(aes(x=factor(Location), y=percentage_prepared, fill=Prepared)) +
+  geom_col(position="dodge") +
+  coord_flip() +
+  theme_minimal() +
+  labs(x="Location", y="percentage", fill="how do you like it prepared")
+
+ 
+```
