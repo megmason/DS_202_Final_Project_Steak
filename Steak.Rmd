@@ -65,15 +65,16 @@ no_steak <- clean_steak %>%
 ```
 
 ## Questions:
+
 Some potential questions that we are interested in examining are:
 
--   How does household income affect whether individuals eat steak? 
+-   How does household income affect whether individuals eat steak?
 
--   How does age affect how individuals like their steak prepared?  
+-   How does age affect how individuals like their steak prepared?
 
 -   How does drinking alcohol and smoking cigarettes influence how those prefer their steak prepared?
 
-```{r echo=FALSE} 
+```{r echo=FALSE}
 #Megan's code: Looking at cheating vs steak prepared
 library(ggplot2)
 affairYes <- eat_steak %>%
@@ -175,4 +176,79 @@ eat_steak %>%
   labs(x="Location", y="percentage", fill="how do you like it prepared")
 
  
+```
+
+```{r}
+# Gwen's Code 
+### 1. Gender vs Steak Consumption and Preparation --------------------------
+
+# Filter out blanks and NAs
+clean_steak_filtered <- clean_steak %>%
+  filter(
+    !is.na(Age) & Age != "",
+    !is.na(Gender) & Gender != "",
+    !is.na(Gamble) & Gamble != "",
+    !is.na(Consume.Steak) & Consume.Steak != ""
+  )
+
+
+ggplot(clean_steak_filtered, aes(x = factor(Age), fill = Consume.Steak)) +
+  geom_bar(position = "dodge") +
+  theme_minimal() +
+  labs(
+    x = "Age",
+    y = "Count",
+    fill = "Eat Steak",
+    title = "Age vs Eat Steak (Yes vs No)"
+  )
+
+ggplot(clean_steak_filtered, aes(x = factor(Age), fill = Prepared)) +
+  geom_bar(position = "dodge") +
+  theme_minimal() +
+  labs(
+    x = "Age",
+    y = "Count",
+    fill = "Prepared",
+    title = "Age vs How You Like It Prepared"
+  )
+
+ggplot(clean_steak_filtered, aes(x = Gender, fill = Consume.Steak)) +
+  geom_bar(position = "dodge") +
+  theme_minimal() +
+  labs(
+    x = "Gender",
+    y = "Count",
+    fill = "Eat Steak",
+    title = "Gender vs Eat Steak (Yes vs No)"
+  )
+
+ggplot(clean_steak_filtered, aes(x = Gender, fill = Prepared)) +
+  geom_bar(position = "dodge") +
+  theme_minimal() +
+  labs(
+    x = "Gender",
+    y = "Count",
+    fill = "Prepared",
+    title = "Gender vs How You Like It Prepared"
+  )
+
+ggplot(clean_steak_filtered, aes(x = Gamble, fill = Consume.Steak)) +
+  geom_bar(position = "dodge") +
+  theme_minimal() +
+  labs(
+    x = "Gamble",
+    y = "Count",
+    fill = "Eat Steak",
+    title = "Gambling vs Eat Steak (Yes vs No)"
+  )
+
+ggplot(clean_steak_filtered, aes(x = Gamble, fill = Prepared)) +
+  geom_bar(position = "dodge") +
+  theme_minimal() +
+  labs(
+    x = "Gamble",
+    y = "Count",
+    fill = "Prepared",
+    title = "Gambling vs How You Like It Prepared"
+  )
 ```
