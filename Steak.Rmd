@@ -252,3 +252,56 @@ ggplot(clean_steak_filtered, aes(x = Gamble, fill = Prepared)) +
     title = "Gambling vs How You Like It Prepared"
   )
 ```
+
+Ryan's Code:
+```{r}
+noNA_Income <- clean_steak %>% 
+  filter(!(Household.Income == "")) 
+total_rows <- nrow(noNA_Income)
+
+noNA_Income %>% 
+  mutate(Household.Income = factor(Household.Income, levels = c("$0 - $24,999", "$25,000 - $49,999", "$50,000 - $99,999", "$100,000 - $149,999", "$150,000+"))) %>% 
+  group_by(Household.Income) %>% 
+  summarise(
+    group_percent = n() / total_rows
+  ) %>% 
+  ggplot(aes(x = "", y = group_percent, fill = Household.Income)) + 
+  geom_bar(width = 1, stat = "identity") + coord_polar("y") + theme_void()
+  
+```
+
+Looking at the pie chart of the percentages of 
+
+
+```{r}
+clean_steak %>% 
+  filter(!Household.Income == "", !Consume.Steak == "") %>% 
+  mutate(Household.Income = factor(Household.Income, levels = c("$0 - $24,999", "$25,000 - $49,999", "$50,000 - $99,999", "$100,000 - $149,999", "$150,000+"))) %>% 
+  group_by(
+    Household.Income, Consume.Steak
+  ) %>% 
+  summarise(
+    eat_steak = n()
+  ) %>% 
+  ggplot(aes(x = Household.Income, y = eat_steak, fill = Consume.Steak)) + geom_col() + labs(x = "Household Income", y = "Number of Respondents", fill = "Consume Steak", title = "Household Income vs If Individual Consumes Steak")
+```
+There appears to be no true relationship between the household income of the individual and if they consume steak. All bars appear to have a majority of individuals who consume steak, and there appears to be no trend between the income and amount of individuals who do or do not consume steak. 
+```{r}
+eat_steak %>% 
+  filter(!Household.Income == "", !is.na(Prepared)) %>% 
+  mutate(Household.Income = factor(Household.Income, levels = c("$0 - $24,999", "$25,000 - $49,999", "$50,000 - $99,999", "$100,000 - $149,999", "$150,000+"))) %>% 
+  mutate(Prepared = factor(Prepared, levels = c("Rare", "Medium rare", "Medium", "Medium Well", "Well"))) %>% 
+  group_by(Household.Income, Prepared) %>% 
+  summarise(
+    prepared_number = n()
+  ) %>% 
+  ggplot(aes(x = Household.Income, y = prepared_number, fill = Prepared)) + geom_col() + coord_flip() + labs(x = "Household Income", y = "Number of Respondents", fill = "Prepared Preference", title = "Household Income vs. Preference on Preparation of Steak")
+```
+The relationship between how individuals prefer their steak prepared does not appear to differ based on household income. There are some slight variations, but no overall trends that appear to stand out. 
+
+Overall it does not appear that household income affects whether and individuals eats steak and how they prefer it to be prepared. 
+
+```{r}
+
+```
+
