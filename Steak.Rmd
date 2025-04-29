@@ -1,5 +1,5 @@
 ---
-title: "Final Project Code"
+title: "How do American lifestyles affect steak preference?"
 author: "Megan Mason, Gwen Hammond, and Ryan Jensen"
 date: "2025-03-27"
 output: html_document
@@ -9,11 +9,34 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## DS 2020 Final Project: Do American Lifestyles correlate with how you like your steak?
+## Introduction
 
-## The Data Set
+According to the United States Department of Agriculture, "The 2025 beef production outlook is raised by 15 million pounds from last month to 26.700 billion pounds". We have also been importing more beef this past year, and that is expected to continue even through tariffs. These tariffs will also raise the price of beef. Because beef is a such an important commodity and prices are expected to increase soon, it is also important that we know how to prepare it so it isn't wasted when we do have it. We want to find out if there are certain factors in the American lifestyle that correlate with how people prefer their steak prepared. This information could be valuable to steakhouses and restaurants that sell steak and are affected by the current economic environment. With prices rising, people are less likely to go out and price of ingredients will increase. Therefore, it is important for restaurants to know their clients, and if certain behaviors/lifestyles affect how customers prefer steak. Then, they would be able to cater to their clients with less wasted food and earn more money. individuals will feel that their money was well spent, and restaurants will have better business. Some potential questions that we are interested in examining are:
 
--   This data set looks at factors and risky behaviors that are found in the American lifestyle. The purpose of this data set is to predict how lifestyle choices correlate with how Americans like there steak. The data set contains 551 observations and has 15 variables which are mainly categorical.
+-   How does household income affect whether individuals eat steak?
+-   How does age, location, and education affect how individuals like their steak prepared?
+-   How does drinking alcohol and smoking cigarettes influence how those prefer their steak prepared?
+
+# The Data
+
+This data set looks at social factors and risky behaviors that are found in the American lifestyle. The purpose of this data set is to predict how lifestyle choices correlate with how Americans like there steak. The data set contains 551 observations and has 15 variables which are mainly categorical. The data set we chose lists 12 factors that could contribute to how people prefer their steak cooked, which are listed below.
+
+-   Lottery: two hypothetical betting situations, the individual picks the one they think is the safer bet, response = A/B
+-   Smoke.Cigarettes: does the individual smoke cigarettes, response = yes/no
+-   Drink.Alcohol: does the individual drink alcohol, response = yes/no
+-   Gamble: does the individual gamble, response = yes/no
+-   Skydiving: does the individual go skydiving, response = yes/no
+-   Speed: does the individual speed while driving, response = yes/no
+-   Affair: has the individual ever cheated on their partner, response = yes/no
+-   Gender: how does the individual identify, response = male/female
+-   Age: how old is the individual, response = 18-29, 30-44, 45-60, \>60
+-   Household.Income: what is the individual's household income, response = 0-24,999; 25,000-49,999; 50,000-99,999; 100,999-149,999; 150,000+
+-   Education: What is the highest level of education individual attained, response = Less than high school degree, High school degree, Some college or Associate degree, Bachelor degree, Graduate degree
+-   Location: Where is the individual from, response = New England, Middle Atlantic, South Atlantic, East North Central, East South Central, West South Central, West North Central, Mountain
+-   There are three variables that are not explanatory:
+    -   RespondentID: arbitrary number, not useful for analysis
+    -   Prepared: How individual likes steak prepared, the response variable under question, response= rare, medium rare, medium, medium well, and well done. This is the primary response variable we are interested in exploring.
+    -   Consume.Steak: Does the individual consume steak, another response variable under question, though we are not as interested in this as we are in how steak is prepared.
 
 ## Cleaning the Data
 
@@ -26,6 +49,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r include=FALSE}
 #Megan's Code 
 library(readr)
+library(maps)
 steak <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/refs/heads/master/steak-survey/steak-risk-survey.csv", stringsAsFactors = FALSE)
 
 names(steak)[names(steak) == "Consider.the.following.hypothetical.situations...br.In.Lottery.A..you.have.a.50..chance.of.success..with.a.payout.of..100...br.In.Lottery.B..you.have.a.90..chance.of.success..with.a.payout.of..20...br..br.Assuming.you.have..10.to.bet..would.you.play.Lottery.A.or.Lottery.B."] <- "Lottery"
@@ -46,8 +70,6 @@ names(steak)[names(steak) == "Location..Census.Region."] <- "Location"
 clean_steak <- steak[complete.cases(steak), ]
 
 anyNA(clean_steak)
-
-
 ```
 
 ```{r}
@@ -77,22 +99,51 @@ Some potential questions that we are interested in examining are:
 Megan's Code:
 
 ```{r echo=FALSE}
-#Megan's code: Looking at cheating vs steak prepared
-library(ggplot2)
-affairYes <- eat_steak %>%
-  filter(!is.na(Affair)) %>%
-  filter(!(is.na(Consume.Steak))) %>%
-  count(`Affair`) %>%
-  mutate(percentage = n / sum(n))
-affairYes
+#MEGAN'S CODE
+clean_steak$Education <- factor(clean_steak$Education, 
+                             levels = c('Less than high school degree', 'High school degree', 'Some college or Associate degree', 'Bachelor degree', 'Graduate degree'))
+clean_steak$Location <- factor(clean_steak$Location,
+                             levels = c("New England", "Middle Atlantic", "South Atlantic", "East North Central", "East South Central", "West South Central", "West North Central",  "Mountain", "Pacific", ""))
 
-affairNo <- no_steak %>%
-  filter(!is.na(Affair)) %>%
-  filter(!(is.na(Consume.Steak))) %>%
-  count(`Affair`) %>%
-  mutate(percentage = n / sum(n))
-affairNo
+eat_steak$Prepared <- factor(eat_steak$Prepared, 
+                             levels = c('Rare', 'Medium rare', 'Medium', 'Medium Well', 'Well'))
+eat_steak$Education <- factor(eat_steak$Education, 
+                             levels = c('Less than high school degree', 'High school degree', 'Some college or Associate degree', 'Bachelor degree', 'Graduate degree'))
 
+eat_steak$Location <- factor(eat_steak$Location,
+                             levels = c("New England","Middle Atlantic", "South Atlantic", "East North Central", "East South Central", "West South Central", "West North Central",  "Mountain", "Pacific", ""))
+
+total_preference <- eat_steak %>%
+  group_by(Prepared) %>%
+  count()
+total_preference
+
+eat_steak %>%
+  filter(Affair != '') %>%
+  filter(`Consume.Steak` != "") %>%
+  group_by(Affair) %>%
+  count(Prepared) %>%
+  mutate(percentage_prepared = n / sum(n)) %>% 
+  ggplot(aes(x=factor(Affair), y=percentage_prepared, fill=Prepared)) +
+  geom_col(position="dodge") +
+  theme_minimal() +
+  labs(x="affair", y="Percentage", fill="How do you like it prepared?")
+
+eat_steak %>%
+  filter(Education != '') %>%
+  filter(`Consume.Steak` != "") %>%
+  group_by(Education) %>%
+  count(Prepared) %>%
+  mutate(percentage_prepared = n / sum(n)) %>% 
+  ggplot(aes(x=factor(Education), y=percentage_prepared, fill=Prepared)) +
+  geom_col(position="dodge") +
+  coord_flip() +
+  theme_minimal() +
+  labs(x="education", y="Percentage", fill="How do you like it prepared?")
+```
+
+```{r include=FALSE, echo=FALSE}
+#This was considered but there was little correlation so it's just here for records:
 clean_steak %>%
   filter(Affair != '') %>%
   filter(`Consume.Steak` != "") %>%
@@ -102,12 +153,9 @@ clean_steak %>%
   ggplot(aes(x=factor(`Consume.Steak`), y=percentage_total, fill=Affair)) +
   geom_col(position="dodge") +
   theme_minimal() +
-  labs(x="consume steak", y="percentage", fill="affair")
+  labs(x="consume steak", y="Percentage", fill="Affair")
 
-clean_steak$Education <- factor(clean_steak$Education, 
-                             levels = c('Less than high school degree', 'High school degree', 'Some college or Associate degree', 'Bachelor degree', 'Graduate degree'))
-clean_steak$Location <- factor(clean_steak$Location,
-                             levels = c("New England","Middle Atlantic", "South Atlantic", "East North Central", "East South Central", "West South Central", "West North Central",  "Mountain", "Pacific", ""))
+#This was considered but the how you like it prepared is more informative on which steak preparation style is better
 clean_steak %>%
   filter(Education != '') %>%
   filter(`Consume.Steak` != "") %>%
@@ -120,51 +168,7 @@ clean_steak %>%
   theme_minimal() +
   labs(x="Education", y="Percentage", fill="Eat Steak")
 
-clean_steak %>%
-  filter(Location != '') %>%
-  filter(`Consume.Steak` != "") %>%
-  group_by(Location) %>%
-  count(`Consume.Steak`) %>%
-  mutate(percentage_total = n / sum(n)) %>%
-  ggplot(aes(x=factor(Location), y=percentage_total, fill=`Consume.Steak`)) +
-  geom_col(position="dodge") +
-  coord_flip() +
-  theme_minimal() +
-  labs(x="Location", y="Percentage", fill="Eat Steak")
-
-
-
-eat_steak$Prepared <- factor(eat_steak$Prepared, 
-                             levels = c('Rare', 'Medium rare', 'Medium', 'Medium Well', 'Well'))
-eat_steak$Education <- factor(eat_steak$Education, 
-                             levels = c('Less than high school degree', 'High school degree', 'Some college or Associate degree', 'Bachelor degree', 'Graduate degree'))
-
-print(unique(eat_steak$Location))
-eat_steak$Location <- factor(eat_steak$Location,
-                             levels = c("New England","Middle Atlantic", "South Atlantic", "East North Central", "East South Central", "West South Central", "West North Central",  "Mountain", "Pacific", ""))
-eat_steak %>%
-  filter(Affair != '') %>%
-  filter(`Consume.Steak` != "") %>%
-  group_by(Affair) %>%
-  count(Prepared) %>%
-  mutate(percentage_prepared = n / sum(n)) %>% 
-  ggplot(aes(x=factor(Affair), y=percentage_prepared, fill=Prepared)) +
-  geom_col(position="dodge") +
-  theme_minimal() +
-  labs(x="affair", y="percentage", fill="how do you like it prepared")
-
-eat_steak %>%
-  filter(Education != '') %>%
-  filter(`Consume.Steak` != "") %>%
-  group_by(Education) %>%
-  count(Prepared) %>%
-  mutate(percentage_prepared = n / sum(n)) %>% 
-  ggplot(aes(x=factor(Education), y=percentage_prepared, fill=Prepared)) +
-  geom_col(position="dodge") +
-  coord_flip() +
-  theme_minimal() +
-  labs(x="education", y="percentage", fill="how do you like it prepared")
-
+#This was used to find which two preferences are most popular for map below
 eat_steak %>%
   filter(Location != '') %>%
   filter(`Consume.Steak` != "") %>%
@@ -175,10 +179,75 @@ eat_steak %>%
   geom_col(position="dodge") +
   coord_flip() +
   theme_minimal() +
-  labs(x="Location", y="percentage", fill="how do you like it prepared")
-
- 
+  labs(x="Location", y="Percentage", fill="How do you like it prepared?")
 ```
+
+```{r echo=FALSE}
+megan_eat_steak <- eat_steak %>%
+  rename(`region.y` = Location)
+
+preference_summary <- megan_eat_steak %>%
+  filter(`region.y` != '') %>%
+  filter(`Consume.Steak` != "") %>%
+  group_by(`region.y`) %>%
+  summarize(percent_rare = mean(Prepared == "Medium rare") * 100,
+            percent_medium = mean(Prepared == "Medium") * 100)
+
+state_region <- tibble(
+  state = tolower(state.name),
+  region = case_when(
+    state %in% c("maine", "new hampshire", "vermont", "massachusetts", "rhode island", "connecticut") ~ "New England",
+    state %in% c("new york", "new jersey", "pennsylvania") ~ "Middle Atlantic",
+    state %in% c("delaware", "maryland", "district of columbia", "virginia", "west virginia", "north carolina", "south carolina", "georgia", "florida") ~ "South Atlantic",
+    state %in% c("ohio", "indiana", "illinois", "michigan", "wisconsin") ~ "East North Central",
+    state %in% c("kentucky", "tennessee", "mississippi", "alabama") ~ "East South Central",
+    state %in% c("texas", "oklahoma", "arkansas", "louisiana") ~ "West South Central",
+    state %in% c("north dakota", "south dakota", "nebraska", "kansas", "minnesota", "iowa", "missouri") ~ "West North Central",
+    state %in% c("montana", "idaho", "wyoming", "colorado", "new mexico", "arizona", "utah", "nevada") ~ "Mountain",
+    state %in% c("washington", "oregon", "california", "alaska", "hawaii") ~ "Pacific",
+    TRUE ~ NA_character_
+  )
+)
+
+us_map <- map_data("state")
+us_map <- us_map %>%
+  left_join(state_region, by = c("region" = "state"))
+
+us_map <- us_map %>%
+  left_join(preference_summary, by = "region.y")
+us_map_long <- us_map %>%
+  pivot_longer(
+    cols = c(percent_rare, percent_medium),
+    names_to = "preference",
+    values_to = "percent"
+  ) %>%
+  mutate(preference = recode(preference,
+                             percent_rare = "Medium Rare",
+                             percent_medium = "Medium"))
+
+ggplot(us_map_long, aes(x = long, y = lat, group = group, fill = percent)) +
+  geom_polygon(color = "white") +
+  coord_fixed(1.3) +
+  theme_void() +
+  scale_fill_gradient(low = "pink", high = "darkred", na.value = "grey90") +
+  labs(
+    title = "Steak Preference by Region",
+    fill = "Percent Preference"
+  ) +
+  facet_wrap(~ preference, ncol = 2) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
+    strip.text = element_text(size = 14, face = "bold"),
+    legend.position = "right"
+  )
+```
+
+### Conclusions
+
+-   If you are opening a restaurant in the southern or midwest states, medium rare would be the best choice for preparing your steak.
+-   Those who have an affair are more likely to prefer steak cooked longer than those who have not had an affair.
+-   As the level of education increases, so does the preference for rare steak. As the level of education increases, the preference for well-done steak decreases.
+-   Across all responses, medium-rare is the most popular choice.
 
 Gwen's Code:
 
