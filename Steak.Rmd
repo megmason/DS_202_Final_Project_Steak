@@ -288,7 +288,7 @@ ggplot(clean_steak_filtered %>% filter(Consume.Steak != ""), aes(x = Gamble, fil
   )
 ```
 
--   According to the graph above, there are not many indications that gambling affects whether or not a person eats steak. However, this graph does show that a few more gamblers eat steak than those who do not gamble. This could be due to money situations.
+-   According to the graphs above, there are not many indications that gambling affects whether or not a person eats steak or how they like their steak prepared. However, the graph of steak consumption vs gambling does show that a few more gamblers eat steak than those who do not gamble. This could be due to money situations. The graph that shows gambling vs steak preparation also shows that among gamblers, medium is closer competition to medium rare than it is among non-gamblers.
 
 Ryan's Code:
 
