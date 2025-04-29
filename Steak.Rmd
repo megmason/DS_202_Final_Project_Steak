@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Cleaning the Data
 
--   Megan started off cleaning the data by re-names the columns so that they are easier to work with.
+-   Megan started off cleaning the data by re-naming the columns so that they are easier to work with.
 
 -   Gwen created a subset of the data where missing values are excluded.
 
@@ -73,6 +73,8 @@ Some potential questions that we are interested in examining are:
 -   How does age affect how individuals like their steak prepared?
 
 -   How does drinking alcohol and smoking cigarettes influence how those prefer their steak prepared?
+
+Megan's Code:
 
 ```{r echo=FALSE}
 #Megan's code: Looking at cheating vs steak prepared
@@ -178,9 +180,13 @@ eat_steak %>%
  
 ```
 
+Gwen's Code:
+
 ```{r}
-# Gwen's Code 
-### 1. Gender vs Steak Consumption and Preparation --------------------------
+
+clean_steak %>%
+  filter(!is.na(Prepared) & Prepared != "") %>%
+  count(Prepared, sort = TRUE)
 
 # Filter out blanks and NAs
 clean_steak_filtered <- clean_steak %>%
@@ -191,58 +197,77 @@ clean_steak_filtered <- clean_steak %>%
     !is.na(Consume.Steak) & Consume.Steak != ""
   )
 
+```
 
+-   According to the code above, the most common way people like their steak prepared is Medium Rare.
+
+```{r}
+#facet wrap for steak preperation by age and gender
+ggplot(clean_steak_filtered %>% filter(Prepared != ""), aes(x = Prepared, fill = factor(Age))) +
+  geom_bar(position = "dodge") +
+  theme_minimal() +
+  labs(
+    title = "Age vs Steak Preparation by Gender",
+    x = "Steak Preparation",
+    y = "Count",
+    fill = "Age"
+  ) +
+  facet_wrap(~ Gender) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+-   Upon evaluating the graph above, it can be seen that there is an overall similarity between steak preparation when sorted by age and gender. However, the graph indicates a few differences among them. For example, the graph shows that more females like their steaks well then males, and that medium and medium rare are closer in males than in females, where there is a greater difference.
+
+```{r}
+# Facet Wrap: Eat Steak by Gender
 ggplot(clean_steak_filtered, aes(x = factor(Age), fill = Consume.Steak)) +
   geom_bar(position = "dodge") +
   theme_minimal() +
   labs(
+    title = "Age vs Steak Consumption by Gender",
     x = "Age",
     y = "Count",
-    fill = "Eat Steak",
-    title = "Age vs Eat Steak (Yes vs No)"
-  )
+    fill = "Eat Steak"
+  ) +
+  facet_wrap(~ Gender)
+```
 
-ggplot(clean_steak_filtered, aes(x = factor(Age), fill = Prepared)) +
-  geom_bar(position = "dodge") +
+-   The graph above shows very similar trends among age and gender versus whether or not people eat steak or not. One noticeable difference is that there are more females who do not eat steak then males who do not eat steak across all age groups.
+
+```{r}
+# Heatmap: Gender vs Steak Preparation
+clean_steak_filtered <- clean_steak %>%
+  filter(!is.na(Prepared) & Prepared != "", !is.na(Gender) & Gender != "")
+
+clean_steak_filtered %>%
+  count(Gender, Prepared) %>%
+  ggplot(aes(x = Gender, y = Prepared, fill = n)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(low = "lightblue", high = "darkblue") +
   theme_minimal() +
   labs(
-    x = "Age",
-    y = "Count",
-    fill = "Prepared",
-    title = "Age vs How You Like It Prepared"
-  )
-
-ggplot(clean_steak_filtered, aes(x = Gender, fill = Consume.Steak)) +
-  geom_bar(position = "dodge") +
-  theme_minimal() +
-  labs(
+    title = "Heatmap of Gender vs Steak Preparation",
     x = "Gender",
-    y = "Count",
-    fill = "Eat Steak",
-    title = "Gender vs Eat Steak (Yes vs No)"
+    y = "Steak Preparation",
+    fill = "Count"
+  )
+```
+
+-   The heat map above shows that among genders, the preference for how steak is cooked is very similar. It can be seen that the biggest difference falls in the Medium category. Among males, medium is more popular than females.
+
+```{r}
+
+
+# Filter out blanks and NAs
+clean_steak_filtered <- clean_steak %>%
+  filter(
+    !is.na(Age) & Age != "",
+    !is.na(Gender) & Gender != "",
+    !is.na(Gamble) & Gamble != "",
+    !is.na(Consume.Steak) & Consume.Steak != ""
   )
 
-ggplot(clean_steak_filtered, aes(x = Gender, fill = Prepared)) +
-  geom_bar(position = "dodge") +
-  theme_minimal() +
-  labs(
-    x = "Gender",
-    y = "Count",
-    fill = "Prepared",
-    title = "Gender vs How You Like It Prepared"
-  )
-
-ggplot(clean_steak_filtered, aes(x = Gamble, fill = Consume.Steak)) +
-  geom_bar(position = "dodge") +
-  theme_minimal() +
-  labs(
-    x = "Gamble",
-    y = "Count",
-    fill = "Eat Steak",
-    title = "Gambling vs Eat Steak (Yes vs No)"
-  )
-
-ggplot(clean_steak_filtered, aes(x = Gamble, fill = Prepared)) +
+ggplot(clean_steak_filtered %>% filter(Prepared != ""), aes(x = Gamble, fill = Prepared)) +
   geom_bar(position = "dodge") +
   theme_minimal() +
   labs(
@@ -251,9 +276,22 @@ ggplot(clean_steak_filtered, aes(x = Gamble, fill = Prepared)) +
     fill = "Prepared",
     title = "Gambling vs How You Like It Prepared"
   )
+
+ggplot(clean_steak_filtered %>% filter(Consume.Steak != ""), aes(x = Gamble, fill = Consume.Steak)) +
+  geom_bar(position = "dodge") +
+  theme_minimal() +
+  labs(
+    x = "Gamble",
+    y = "Count",
+    fill = "Eat Steak",
+    title = "Gambling vs Steak Consumption (Yes vs No)"
+  )
 ```
 
+-   According to the graph above, there are not many indications that gambling affects whether or not a person eats steak. However, this graph does show that a few more gamblers eat steak than those who do not gamble. This could be due to money situations.
+
 Ryan's Code:
+
 ```{r}
 noNA_Income <- clean_steak %>% 
   filter(!(Household.Income == "")) 
@@ -270,8 +308,7 @@ noNA_Income %>%
   
 ```
 
-Analyzing the pie chart of the percentages of respondents in each income category, it is clear the category from $50,000-$99,000 has a much greater number of respondents then the other 4 categories. The other 4 income categories are all mostly similar in the percent of respondents in the category. This must be considered when analyzing if respondents consume steak and how they prefer it prepared within each income group. 
-
+-   Analyzing the pie chart of the percentages of respondents in each income category, it is clear the category from \$50,000-\$99,999 has a much greater number of respondents then the other 4 categories. The other 4 income categories are all mostly similar in the percent of respondents in the category. This must be considered when analyzing if respondents consume steak and how they prefer it prepared within each income group.
 
 ```{r}
 clean_steak %>% 
@@ -286,7 +323,7 @@ clean_steak %>%
   ggplot(aes(x = Household.Income, y = eat_steak, fill = Consume.Steak)) + geom_col() + labs(x = "Household Income", y = "Number of Respondents", fill = "Consume Steak", title = "Household Income vs If Individual Consumes Steak")
 ```
 
-There appears to be no true relationship between the household income of the individual and if they consume steak. All bars appear to have a majority of individuals who consume steak, and there appears to be no trend between the income and amount of individuals who do or do not consume steak. 
+-   There appears to be no true relationship between the household income of the individual and if they consume steak. All bars appear to have a majority of individuals who consume steak, and there appears to be no trend between the income and amount of individuals who do or do not consume steak.
 
 ```{r}
 eat_steak %>% 
@@ -300,10 +337,9 @@ eat_steak %>%
   ggplot(aes(x = Household.Income, y = prepared_number, fill = Prepared)) + geom_col() + coord_flip() + labs(x = "Household Income", y = "Number of Respondents", fill = "Prepared Preference", title = "Household Income vs. Preference on Preparation of Steak")
 ```
 
-The relationship between how individuals prefer their steak prepared does not appear to differ based on household income. There are some slight variations, but no overall trends that appear to stand out. 
+-   The relationship between how individuals prefer their steak prepared does not appear to differ based on household income. There are some slight variations, but no overall trends that appear to stand out.
 
-Overall it does not appear that household income affects whether and individuals eats steak and how they prefer it to be prepared. 
-
+Overall it does not appear that household income affects whether and individuals eats steak and how they prefer it to be prepared.
 
 ```{r}
 noNA_alcohol_smoke <- clean_steak %>% 
@@ -320,8 +356,7 @@ noNA_alcohol_smoke %>%
 
 ```
 
-Looking at this summary, we can see that a greater majority of respondents reported that they drink alcohol but do not smoke. There is a very little amount of respondents who reported that they do not drink but do smoke. These differences will be considered when analyzing the relationship between whether they eat steak. 
-
+-   Looking at this summary, we can see that a greater majority of respondents reported that they drink alcohol but do not smoke. There is a very little amount of respondents who reported that they do not drink but do smoke. These differences will be considered when analyzing the relationship between whether they eat steak.
 
 ```{r}
 noNA_alcohol_smoke %>% 
@@ -333,7 +368,7 @@ noNA_alcohol_smoke %>%
   ggplot(aes(x = interaction(Drink.Alcohol,Smoke.Cigarettes), y = steak_count, fill = Consume.Steak)) + geom_col() + labs(title = "Drink Alcohol and/or Smoke Cigarettes vs. Whether Respondent Consumes Steak", x = "Drink Alcohol and/or Smoke Cigarettes Respectively", y = "Number of Respondents", fill = "Whether Respondent Consumes Steak")
 ```
 
-Analyzing the relationship between whether respondents smoke cigarettes and/or drink alcohol, there does not appear to be any major trends between the two. Respondents in all four categories tend to respond that they do consume steak. 
+-   Analyzing the relationship between whether respondents smoke cigarettes and/or drink alcohol, there does not appear to be any major trends between the two. Respondents in all four categories tend to respond that they do consume steak.
 
 ```{r}
 noNA_alcohol_smoke %>% 
@@ -347,6 +382,6 @@ noNA_alcohol_smoke %>%
   
 ```
 
-Analyzing the bar chart, there does appear to be a slight difference in the relative number of respondents within the four groups and how they prefer their steak prepared. In the No,No and Yes,Yes categories, Medium Rare and Medium look to have about the same number of respondents relative to their categories. In the Yes,No category, Medium Rare appears to be slightly more popular within the category. Rare and Well appear to be the least selected in all four groups by a significant amount.
+-   Analyzing the bar chart, there does appear to be a slight difference in the relative number of respondents within the four groups and how they prefer their steak prepared. In the No,No and Yes,Yes categories, Medium Rare and Medium look to have about the same number of respondents relative to their categories. In the Yes,No category, Medium Rare appears to be slightly more popular within the category. Rare and Well appear to be the least selected in all four groups by a significant amount.
 
-Overall, there appears to be very slight differences between the four groups based on whether they drink alcohol and/or smoke cigarettes, and whether they respondents consume steak, and if they do, how they prefer their steak prepared. 
+Overall, there appears to be very slight differences between the four groups based on whether they drink alcohol and/or smoke cigarettes, and whether they respondents consume steak, and if they do, how they prefer their steak prepared.
