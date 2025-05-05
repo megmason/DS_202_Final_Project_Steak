@@ -2,7 +2,7 @@
 title: "How do American lifestyles affect steak preference?"
 author: "Megan Mason, Gwen Hammond, and Ryan Jensen"
 date: "2025-03-27"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -98,7 +98,7 @@ Some potential questions that we are interested in examining are:
 
 Megan's Code:
 
-```{r echo=FALSE}
+```{r}
 #MEGAN'S CODE
 clean_steak$Education <- factor(clean_steak$Education, 
                              levels = c('Less than high school degree', 'High school degree', 'Some college or Associate degree', 'Bachelor degree', 'Graduate degree'))
@@ -142,7 +142,7 @@ eat_steak %>%
   labs(x="education", y="Percentage", fill="How do you like it prepared?")
 ```
 
-```{r include=FALSE, echo=FALSE}
+```{r}
 #This was considered but there was little correlation so it's just here for records:
 clean_steak %>%
   filter(Affair != '') %>%
@@ -182,7 +182,7 @@ eat_steak %>%
   labs(x="Location", y="Percentage", fill="How do you like it prepared?")
 ```
 
-```{r echo=FALSE}
+```{r}
 megan_eat_steak <- eat_steak %>%
   rename(`region.y` = Location)
 
