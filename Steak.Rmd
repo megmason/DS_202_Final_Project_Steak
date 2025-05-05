@@ -283,7 +283,7 @@ clean_steak %>%
   summarise(
     eat_steak = n()
   ) %>% 
-  ggplot(aes(x = Household.Income, y = eat_steak, fill = Consume.Steak)) + geom_col() + labs(x = "Household Income", y = "Number of Respondents", fill = "Consume Steak", title = "Household Income vs If Individual Consumes Steak")
+  ggplot(aes(x = Household.Income, y = eat_steak, fill = Consume.Steak)) + geom_col() + labs(x = "Household Income", y = "Number of Respondents", fill = "Consume Steak", title = "Household Income vs If Individual Consumes Steak") + coord_flip()
 ```
 
 There appears to be no true relationship between the household income of the individual and if they consume steak. All bars appear to have a majority of individuals who consume steak, and there appears to be no trend between the income and amount of individuals who do or do not consume steak. 
