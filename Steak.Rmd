@@ -100,6 +100,14 @@ Megan's Code:
 
 ```{r}
 #MEGAN'S CODE
+steak_colors <- c(
+  "Rare" = "#f00000",        # light pink
+  "Medium rare" = "#d00000",
+  "Medium" = "#b00000",
+  "Medium Well" = "#900000",
+  "Well" = "#700000"     # dark red
+)
+
 clean_steak$Education <- factor(clean_steak$Education, 
                              levels = c('Less than high school degree', 'High school degree', 'Some college or Associate degree', 'Bachelor degree', 'Graduate degree'))
 clean_steak$Location <- factor(clean_steak$Location,
@@ -126,6 +134,7 @@ eat_steak %>%
   mutate(percentage_prepared = n / sum(n)) %>% 
   ggplot(aes(x=factor(Affair), y=percentage_prepared, fill=Prepared)) +
   geom_col(position="dodge") +
+  scale_fill_manual(values = steak_colors) + 
   theme_minimal() +
   labs(x="affair", y="Percentage", fill="How do you like it prepared?")
 
@@ -137,6 +146,7 @@ eat_steak %>%
   mutate(percentage_prepared = n / sum(n)) %>% 
   ggplot(aes(x=factor(Education), y=percentage_prepared, fill=Prepared)) +
   geom_col(position="dodge") +
+  scale_fill_manual(values = steak_colors) +  # apply custom color scale
   coord_flip() +
   theme_minimal() +
   labs(x="education", y="Percentage", fill="How do you like it prepared?")
