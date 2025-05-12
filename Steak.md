@@ -33,13 +33,19 @@ examining are:
 
 # The Data
 
-This data set looks at social factors and risky behaviors that are found
-in the American lifestyle. The purpose of this data set is to predict
-how lifestyle choices correlate with how Americans like there steak. The
-data set contains 551 observations and has 15 variables which are mainly
-categorical. The data set we chose lists 12 factors that could
-contribute to how people prefer their steak cooked, which are listed
-below.
+[This is the link to our
+dataset.](https://github.com/fivethirtyeight/data/blob/master/steak-survey/steak-risk-survey.csv)
+Our dataset is from the fivethirtyeight organization, their data
+repository, in the steak-survey folder. This data set looks at social
+factors and risky behaviors that are found in the American lifestyle.
+The purpose of this data set is to predict how lifestyle choices
+correlate with how Americans like there steak. The data set contains 551
+observations and has 15 variables which are mainly categorical. It was
+not cleaned, since it had some almost entirely NA rows and the column
+names had to be recoded (the recoded names are given below). Many
+responses had at least one NA value, and these were dealt with in the
+pipeline. The data set we chose lists 12 factors that could contribute
+to how people prefer their steak cooked, which are listed below.
 
 - Lottery: two hypothetical betting situations, the individual picks the
   one they think is the safer bet, response = A/B
@@ -95,12 +101,6 @@ anyNA(clean_steak)
 library(tidyverse)
 ```
 
-    ## Warning: package 'tidyverse' was built under R version 4.4.2
-
-    ## Warning: package 'forcats' was built under R version 4.4.2
-
-    ## Warning: package 'lubridate' was built under R version 4.4.2
-
     ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
     ## ✔ dplyr     1.1.4     ✔ purrr     1.0.2
     ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
@@ -118,9 +118,6 @@ eat_steak <- clean_steak %>%
 
 no_steak <- clean_steak %>% 
   filter(Consume.Steak == "No")
-
-# View(eat_steak)
-# View(no_steak)
 ```
 
 Megan’s Code:
@@ -128,11 +125,11 @@ Megan’s Code:
 ``` r
 #MEGAN'S CODE
 steak_colors <- c(
-  "Rare" = "#f00000",        # light pink
-  "Medium rare" = "#d00000",
-  "Medium" = "#b00000",
-  "Medium Well" = "#900000",
-  "Well" = "#700000"     # dark red
+  "Rare" = "#ffcccc",
+  "Medium rare" = "#ff6666",
+  "Medium" = "#ff3333",
+  "Medium Well" = "#cc0000",
+  "Well" = "#990000"
 )
 
 clean_steak$Education <- factor(clean_steak$Education, 
@@ -198,6 +195,8 @@ eat_steak %>%
 ![](Steak_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
 
 ``` r
+#THE FOLLOWING CODE WAS NOT INCLUDED IN THE FINAL PRESENTATION AND ANALYSIS
+consume_colors <- c("Yes" = "#00cc00", "No" = "#cc0000")  # Green for Yes, Red for No
 #This was considered but there was little correlation so it's just here for records:
 clean_steak %>%
   filter(Affair != '') %>%
@@ -207,6 +206,7 @@ clean_steak %>%
   mutate(percentage_total = n / sum(n)) %>%
   ggplot(aes(x=factor(`Consume.Steak`), y=percentage_total, fill=Affair)) +
   geom_col(position="dodge") +
+  scale_fill_manual(values = consume_colors) +
   theme_minimal() +
   labs(x="consume steak", y="Percentage", fill="Affair")
 ```
@@ -214,6 +214,7 @@ clean_steak %>%
 ![](Steak_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
+#THE FOLLOWING CODE WAS NOT INCLUDED IN THE FINAL PRESENTATION AND ANALYSIS
 #This was considered but the how you like it prepared is more informative on which steak preparation style is better
 clean_steak %>%
   filter(Education != '') %>%
@@ -224,6 +225,7 @@ clean_steak %>%
   ggplot(aes(x=factor(Education), y=percentage_total, fill=`Consume.Steak`)) +
   geom_col(position="dodge") +
   coord_flip() +
+  scale_fill_manual(values = consume_colors) +
   theme_minimal() +
   labs(x="Education", y="Percentage", fill="Eat Steak")
 ```
@@ -231,6 +233,7 @@ clean_steak %>%
 ![](Steak_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
 
 ``` r
+#THE FOLLOWING CODE WAS NOT INCLUDED IN THE FINAL PRESENTATION AND ANALYSIS
 #This was used to find which two preferences are most popular for map below
 eat_steak %>%
   filter(Location != '') %>%
@@ -241,6 +244,7 @@ eat_steak %>%
   ggplot(aes(x=factor(Location), y=percentage_prepared, fill=Prepared)) +
   geom_col(position="dodge") +
   coord_flip() +
+  scale_fill_manual(values = steak_colors) +
   theme_minimal() +
   labs(x="Location", y="Percentage", fill="How do you like it prepared?")
 ```
@@ -311,13 +315,26 @@ ggplot(us_map_long, aes(x = long, y = lat, group = group, fill = percent)) +
 
 ### Megan’s Conclusions
 
-- If you are opening a restaurant in the southern or midwest states,
-  medium rare would be the best choice for preparing your steak.
+- If you are opening a restaurant in the southern or Midwest states,
+  medium rare would be the best choice for preparing your steak. Medium
+  is a better choice for western states.
 - Those who have an affair are more likely to prefer steak cooked longer
   than those who have not had an affair.
 - As the level of education increases, so does the preference for rare
   steak. As the level of education increases, the preference for
   well-done steak decreases.
+- Further investigation should be done for the variable Education,
+  because 100% of respondents who have less than a high school degree
+  that consume steak said they prefer it well done. This highlights a
+  potential issue that not enough samples were taken, or that there is a
+  third confounding variable, like age.
+- Further investigation into how rare and well correlate would be
+  interesting; is there a strong negative correlation between them as
+  indicated by the variable Education?
+- A chain restaurant in a town where there are graduate programs and
+  professionals with PhDs should have more rare steak options than their
+  other locations where most of the population has at most a bachelor’s
+  degree.
 - Across all responses, medium-rare is the most popular choice.
 
 Gwen’s Code:
