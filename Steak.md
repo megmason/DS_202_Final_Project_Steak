@@ -95,6 +95,12 @@ anyNA(clean_steak)
 library(tidyverse)
 ```
 
+    ## Warning: package 'tidyverse' was built under R version 4.4.2
+
+    ## Warning: package 'forcats' was built under R version 4.4.2
+
+    ## Warning: package 'lubridate' was built under R version 4.4.2
+
     ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
     ## ✔ dplyr     1.1.4     ✔ purrr     1.0.2
     ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
@@ -693,7 +699,7 @@ clean_steak %>%
   summarise(
     eat_steak = n()
   ) %>% 
-  ggplot(aes(x = Household.Income, y = eat_steak, fill = Consume.Steak)) + geom_col() + labs(x = "Household Income", y = "Number of Respondents", fill = "Consume Steak", title = "Household Income vs If Individual Consumes Steak")
+  ggplot(aes(x = Household.Income, y = eat_steak, fill = Consume.Steak)) + geom_col() + labs(x = "Household Income", y = "Number of Respondents", fill = "Consume Steak", title = "Household Income vs If Individual Consumes Steak") + coord_flip()
 ```
 
     ## `summarise()` has grouped output by 'Household.Income'. You can override using
@@ -701,11 +707,42 @@ clean_steak %>%
 
 ![](Steak_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
+``` r
+clean_steak %>% 
+  filter(!Household.Income == "", !Consume.Steak == "") %>% 
+  mutate(Household.Income = factor(Household.Income, levels = c("$0 - $24,999", "$25,000 - $49,999", "$50,000 - $99,999", "$100,000 - $149,999", "$150,000+"))) %>% 
+  group_by(
+    Household.Income, Consume.Steak
+  ) %>% 
+  summarise(
+    eat_steak = n()
+  ) %>% 
+  ggplot(aes(x = Household.Income, y = eat_steak, fill = Consume.Steak)) + geom_col(position = "fill") + labs(x = "Household Income", y = "Number of Respondents", fill = "Consume Steak", title = "Household Income vs If Individual Consumes Steak") + coord_flip()
+```
+
+    ## `summarise()` has grouped output by 'Household.Income'. You can override using
+    ## the `.groups` argument.
+
+![](Steak_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
 - There appears to be no true relationship between the household income
   of the individual and if they consume steak. All bars appear to have a
   majority of individuals who consume steak, and there appears to be no
   trend between the income and amount of individuals who do or do not
   consume steak.
+
+``` r
+steak_colors <- c(
+  "Rare" = "#ffcccc",
+  "Medium rare" = "#ff6666",
+  "Medium" = "#ff3333",
+  "Medium Well" = "#cc0000",
+  "Well" = "#990000"
+)
+```
+
+Creates steak_colors vector which holds the possible values for
+Prepared, and matches them with a color for better visualization.
 
 ``` r
 eat_steak %>% 
@@ -716,13 +753,30 @@ eat_steak %>%
   summarise(
     prepared_number = n()
   ) %>% 
-  ggplot(aes(x = Household.Income, y = prepared_number, fill = Prepared)) + geom_col() + coord_flip() + labs(x = "Household Income", y = "Number of Respondents", fill = "Prepared Preference", title = "Household Income vs. Preference on Preparation of Steak")
+  ggplot(aes(x = Household.Income, y = prepared_number, fill = Prepared)) + geom_col() + coord_flip() + labs(x = "Household Income", y = "Number of Respondents", fill = "Prepared Preference", title = "Household Income vs. Preference on Preparation of Steak") + scale_fill_manual(values = steak_colors)
 ```
 
     ## `summarise()` has grouped output by 'Household.Income'. You can override using
     ## the `.groups` argument.
 
-![](Steak_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](Steak_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+``` r
+eat_steak %>% 
+  filter(!Household.Income == "", !is.na(Prepared)) %>% 
+  mutate(Household.Income = factor(Household.Income, levels = c("$0 - $24,999", "$25,000 - $49,999", "$50,000 - $99,999", "$100,000 - $149,999", "$150,000+"))) %>% 
+  mutate(Prepared = factor(Prepared, levels = c("Rare", "Medium rare", "Medium", "Medium Well", "Well"))) %>% 
+  group_by(Household.Income, Prepared) %>% 
+  summarise(
+    prepared_number = n()
+  ) %>% 
+  ggplot(aes(x = Household.Income, y = prepared_number, fill = Prepared)) + geom_col(position = "fill") + coord_flip() + labs(x = "Household Income", y = "Number of Respondents", fill = "Prepared Preference", title = "Household Income vs. Preference on Preparation of Steak") + scale_fill_manual(values = steak_colors)
+```
+
+    ## `summarise()` has grouped output by 'Household.Income'. You can override using
+    ## the `.groups` argument.
+
+![](Steak_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 - The relationship between how individuals prefer their steak prepared
   does not appear to differ based on household income. There are some
@@ -748,7 +802,7 @@ noNA_alcohol_smoke %>%
     ## `summarise()` has grouped output by 'Drink.Alcohol'. You can override using the
     ## `.groups` argument.
 
-![](Steak_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](Steak_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 - Looking at this summary, we can see that a greater majority of
   respondents reported that they drink alcohol but do not smoke. There
@@ -769,7 +823,22 @@ noNA_alcohol_smoke %>%
     ## `summarise()` has grouped output by 'Drink.Alcohol', 'Smoke.Cigarettes'. You
     ## can override using the `.groups` argument.
 
-![](Steak_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](Steak_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+``` r
+noNA_alcohol_smoke %>% 
+  filter(!Consume.Steak == "") %>% 
+  group_by(Drink.Alcohol, Smoke.Cigarettes, Consume.Steak) %>% 
+  summarise(
+    steak_count = n()
+  ) %>% 
+  ggplot(aes(x = interaction(Drink.Alcohol,Smoke.Cigarettes), y = steak_count, fill = Consume.Steak)) + geom_col(position = "fill") + labs(title = "Drink Alcohol and/or Smoke Cigarettes vs. Whether Respondent Consumes Steak", x = "Drink Alcohol and/or Smoke Cigarettes Respectively", y = "Number of Respondents", fill = "Whether Respondent Consumes Steak")
+```
+
+    ## `summarise()` has grouped output by 'Drink.Alcohol', 'Smoke.Cigarettes'. You
+    ## can override using the `.groups` argument.
+
+![](Steak_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 - Analyzing the relationship between whether respondents smoke
   cigarettes and/or drink alcohol, there does not appear to be any major
@@ -784,13 +853,29 @@ noNA_alcohol_smoke %>%
   summarise(
     totals_Prepared = n() 
   ) %>% 
-  ggplot(aes(x = interaction(Drink.Alcohol, Smoke.Cigarettes), y = totals_Prepared, fill = Prepared)) + geom_col() + labs(title = "Drink Alcohol and/or Smoke Cigarettes vs Preference of Steak Preparation", x = "Drink Alcohol and/or Smoke Cigarettes Respectively", y = "Number of Respondents", fill = "Preparation Preference")
+  ggplot(aes(x = interaction(Drink.Alcohol, Smoke.Cigarettes), y = totals_Prepared, fill = Prepared)) + geom_col() + labs(title = "Drink Alcohol and/or Smoke Cigarettes vs Preference of Steak Preparation", x = "Drink Alcohol and/or Smoke Cigarettes Respectively", y = "Number of Respondents", fill = "Preparation Preference") + scale_fill_manual(values = steak_colors)
 ```
 
     ## `summarise()` has grouped output by 'Drink.Alcohol', 'Smoke.Cigarettes'. You
     ## can override using the `.groups` argument.
 
-![](Steak_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](Steak_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+``` r
+noNA_alcohol_smoke %>% 
+  filter(!Prepared == "" & Consume.Steak == "Yes") %>% 
+   mutate(Prepared = factor(Prepared, levels = c("Rare", "Medium rare", "Medium", "Medium Well", "Well"))) %>% 
+  group_by(Drink.Alcohol, Smoke.Cigarettes, Prepared) %>% 
+  summarise(
+    totals_Prepared = n() 
+  ) %>% 
+  ggplot(aes(x = interaction(Drink.Alcohol, Smoke.Cigarettes), y = totals_Prepared, fill = Prepared)) + geom_col(position = "fill") + labs(title = "Drink Alcohol and/or Smoke Cigarettes vs Preference of Steak Preparation", x = "Drink Alcohol and/or Smoke Cigarettes Respectively", y = "Number of Respondents", fill = "Preparation Preference") + scale_fill_manual(values = steak_colors)
+```
+
+    ## `summarise()` has grouped output by 'Drink.Alcohol', 'Smoke.Cigarettes'. You
+    ## can override using the `.groups` argument.
+
+![](Steak_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 - Analyzing the bar chart, there does appear to be a slight difference
   in the relative number of respondents within the four groups and how
